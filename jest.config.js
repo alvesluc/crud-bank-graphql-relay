@@ -1,6 +1,6 @@
 const dotenv = require("dotenv");
 
-dotenv.config({ path: "server/.env.development.local" });
+dotenv.config({ path: "server/.env" });
 
 module.exports = {
   moduleDirectories: ["node_modules", "<rootDir>"],
