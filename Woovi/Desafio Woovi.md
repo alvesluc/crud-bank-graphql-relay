@@ -216,3 +216,51 @@ Considero que o teste ficou mais verboso do que eu esperava, mas está testando 
 1. should return a null given an invalid id
 2. should return a User when given id is from a User
 
+###### Melhoria no `createUser`
+
+O pacote `graphql-relay` exporta o método `toGlobalId`, que faz o mesmo que o `globalIdField` só que sem precisar pela mutation, mas para aplicar a mudança na propriedade `id` do usuário criado pelo mongoose, outra coisa precisou ser feita. Este era o código anteriormente:
+
+```TypeScript
+const newUser = await new UserModel({
+	name: name,
+	email: email,
+	password: password,
+}).save();
+
+console.log(newUser.id); // 685614ad75686ae6aef8d437
+console.log(newUser._id); // 685614ad75686ae6aef8d437
+```
+ 
+ A primeira mudança a ser feita, foi adicionar a propriedade `_id` explicitamente com o tipo `Types.ObjectId` na interface `IUser`, agora o `_id` deixa de ser do tipo `unknown` e pode ser utilizado como parâmetro para a função `toGlobalId`. Realizei a mudança e:
+
+```TypeScript
+const newUser = await new UserModel({
+	name: name,
+	email: email,
+	password: password,
+}).save();
+
+newUser.id = toGlobalId("User", newUser._id.toString());
+
+console.log(newUser.id); // 685614ad75686ae6aef8d437
+console.log(newUser._id); // 685614ad75686ae6aef8d437
+```
+
+O `id` não estava sendo reatribuído. O mongoose tem um comportamento específico para o getter do `id` e não permite que ele receba outro valor de forma manual. O workaround que eu encontrei para poder fazer essa reatribuição do `id` foi utilizando o método `toObject` disponível no `newUser`.
+
+```TypeScript
+const newUser = await new UserModel({
+	name: name,
+	email: email,
+	password: password,
+}).save();
+
+const userPlainObject = newUser.toObject();
+const generatedGlobalId = toGlobalId("User", newUser._id.toString());
+userPlainObject.id = generatedGlobalId;
+
+console.log(newUser.id); // VXNlcjo2ODU2MjA2NDAzNDljMWI0ZjQ3ZGVjMmI=
+console.log(newUser._id); // 685620640349c1b4f47dec2b
+```
+
+Agora sim! Antes eu estava executando a `UserRegisterWithEmailMutation` antes de poder fazer uma query com `node`, era a única forma de retornar um usuário com um `globalIdField`, agora o helper `createUser` também está retornando um identificador global válido reduzindo bastante do ruído da leitura do teste.
