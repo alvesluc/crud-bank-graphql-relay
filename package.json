@@ -1,0 +1,19 @@
+{
+  "name": "woovi",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test:watch": "jest --watchAll --runInBand --verbose",
+    "services:detached": "docker compose -f ./compose.yaml up -d"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@babel/preset-env": "^7.27.2",
+    "@babel/preset-typescript": "^7.27.1",
+    "@types/jest": "^30.0.0",
+    "dotenv": "^16.5.0",
+    "jest": "^30.0.0"
+  }
+}

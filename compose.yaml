@@ -1,0 +1,8 @@
+services:
+  mongodb:
+    container_name: "mongodb"
+    environment:
+      - MONGO_INITDB_DATABASE=woovi-playground-replica
+    image: "mongo:8.0-noble"
+    ports: ["27017:27017"]
+    restart: always

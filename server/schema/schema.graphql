@@ -1,0 +1,132 @@
+"""
+An interface for all entities that can be identified by a unique ID.
+"""
+interface Node {
+  """
+  The unique identifier for the object.
+  """
+  id: ID!
+}
+
+"""
+Information about pagination in a connection.
+"""
+type PageInfo {
+  """
+  When paginating forwards, are there more items?
+  """
+  hasNextPage: Boolean!
+  """
+  When paginating backwards, are there more items?
+  """
+  hasPreviousPage: Boolean!
+  """
+  When paginating backwards, the cursor to continue.
+  """
+  startCursor: String
+  """
+  When paginating forwards, the cursor to continue.
+  """
+  endCursor: String
+}
+
+"""
+User data
+"""
+type User implements Node {
+  """
+  The ID of an object
+  """
+  id: ID!
+
+  """
+  mongoose _id
+  """
+  _id: String!
+  name: String
+  email: String
+  balance: Int
+  createdAt: String
+  updatedAt: String
+}
+
+input UserRegisterWithEmailInput {
+  name: String!
+  email: String!
+  password: String!
+  clientMutationId: String
+}
+
+type UserRegisterWithEmailPayload {
+  token: String
+  me: User
+
+  """
+  Default error field resolver.
+  """
+  error: String
+
+  """
+  Default success field resolver.
+  """
+  success: String
+  clientMutationId: String
+}
+
+input UserLoginWithEmailInput {
+  email: String!
+  password: String!
+  clientMutationId: String
+}
+
+type UserLoginWithEmailPayload {
+  token: String
+  me: User
+
+  """
+  Default error field resolver.
+  """
+  error: String
+
+  """
+  Default success field resolver.
+  """
+  success: String
+  clientMutationId: String
+}
+
+"""
+The root of all queries
+"""
+type Query {
+  """
+  Fetches an object given its ID
+  """
+  node(
+    """
+    The ID of an object
+    """
+    id: ID!
+  ): Node
+
+  """
+  Fetches objects given their IDs
+  """
+  nodes(
+    """
+    The IDs of objects
+    """
+    ids: [ID!]!
+  ): [Node]!
+
+  """
+  Fetches the current logged user
+  """
+  me: User
+}
+
+type Mutation {
+  UserRegisterWithEmail(
+    input: UserLoginWithEmailInput!
+  ): UserLoginWithEmailPayload
+}

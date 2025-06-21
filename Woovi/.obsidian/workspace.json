@@ -1,0 +1,184 @@
+{
+  "main": {
+    "id": "5f6c62ebd286150d",
+    "type": "split",
+    "children": [
+      {
+        "id": "2d1502b7c1a09439",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "1151977f6befe067",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Desafio Woovi.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Desafio Woovi"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "48b18cc104d853ab",
+    "type": "split",
+    "children": [
+      {
+        "id": "9335e4a3ad8abebe",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f4e8258cce381859",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "7591c1f76715fb17",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "2de38320cad0b1cd",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "right": {
+    "id": "a1ce3831caf7fd3e",
+    "type": "split",
+    "children": [
+      {
+        "id": "fae42558dda0a1b9",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "84b3a27da2fd8202",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Desafio Woovi.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for Desafio Woovi"
+            }
+          },
+          {
+            "id": "e1964663454d07a8",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Desafio Woovi.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from Desafio Woovi"
+            }
+          },
+          {
+            "id": "a555ee822c7b6b83",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "d6ea1b8b2b54795b",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Desafio Woovi.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of Desafio Woovi"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
+    }
+  },
+  "active": "1151977f6befe067",
+  "lastOpenFiles": [
+    "server/src/__tests__/graphql/user/mutations/UserRegisterWithEmailMutationTest.test.ts.md",
+    "Desafio Woovi.md",
+    "server/src/__tests__/graphql/user/mutations",
+    "server/src/__tests__/graphql/user",
+    "server/src/__tests__/graphql",
+    "server/src/__tests__",
+    "server/src",
+    "server",
+    "Welcome.md"
+  ]
+}
