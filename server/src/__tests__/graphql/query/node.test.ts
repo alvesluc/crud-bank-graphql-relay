@@ -19,12 +19,6 @@ describe("node", () => {
 	      node(id: $id) {
           ... on User {
             id
-            _id
-            name
-            email
-            balance
-            createdAt
-            updatedAt
           }
         }
       }`;
@@ -49,35 +43,7 @@ describe("node", () => {
   });
 
   it("should return a User when given id is from a User", async () => {
-    const UserRegisterWithEmailMutation = `
-      mutation UserRegisterWithEmailMutation($name: String!, $email: String!, $password: String!) {
-        UserRegisterWithEmail(input: {
-          name: $name,
-          email: $email,
-          password: $password
-        }) {
-          me {
-            id
-          }
-        }
-      }
-    `;
-
-    const newUserResponse = await fetch("http://localhost:4000/graphql", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        query: UserRegisterWithEmailMutation,
-        variables: {
-          name: "Lucas Alves",
-          email: "lucas@mail.com",
-          password: "password",
-        },
-      }),
-    });
-
-    const newUserResponseBody = await newUserResponse.json();
-    const newUser = newUserResponseBody.data.UserRegisterWithEmail.me;
+    const { id } = await createUser();
 
     const nodeUser = `
       query GetNode($id: ID!) {
@@ -101,7 +67,7 @@ describe("node", () => {
       },
       body: JSON.stringify({
         query: nodeUser,
-        variables: { id: newUser.id },
+        variables: { id },
       }),
     });
 
