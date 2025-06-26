@@ -1,24 +1,21 @@
 import { GraphQLNonNull, GraphQLString } from "graphql";
 import { mutationWithClientMutationId } from "graphql-relay";
-import { UserModel } from "../UserModel";
 import { generateToken } from "../../../auth";
-import { UserType } from "../UserType";
 import { GraphQLContext } from "../../../graphQLContext";
+import { UserModel } from "../UserModel";
+import { UserType } from "../UserType";
 
 export default mutationWithClientMutationId({
   name: "UserRegisterWithEmail",
   inputFields: {
-    name: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    email: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    password: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
+    name: { type: new GraphQLNonNull(GraphQLString) },
+    email: { type: new GraphQLNonNull(GraphQLString) },
+    password: { type: new GraphQLNonNull(GraphQLString) },
   },
-  mutateAndGetPayload: async ({ name, email, password }, context: GraphQLContext) => {
+  mutateAndGetPayload: async (
+    { name, email, password },
+    context: GraphQLContext
+  ) => {
     const hasUser =
       (await UserModel.countDocuments({
         email: email.trim().toLowerCase(),

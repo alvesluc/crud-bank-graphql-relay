@@ -8,12 +8,8 @@ import { GraphQLContext } from "../../../graphQLContext";
 export default mutationWithClientMutationId({
   name: "UserLoginWithEmail",
   inputFields: {
-    email: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
-    password: {
-      type: new GraphQLNonNull(GraphQLString),
-    },
+    email: { type: new GraphQLNonNull(GraphQLString) },
+    password: { type: new GraphQLNonNull(GraphQLString) },
   },
   mutateAndGetPayload: async ({ email, password }, context: GraphQLContext) => {
     const user = await UserModel.findOne({ email: email.trim().toLowerCase() });
