@@ -1,8 +1,36 @@
 services:
   mongodb:
+    image: "mongo:8.0-noble"
     container_name: "mongodb"
     environment:
       - MONGO_INITDB_DATABASE=woovi-playground-replica
-    image: "mongo:8.0-noble"
     ports: ["27017:27017"]
+    restart: always
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    
+  init-mongodb:
+    image: "mongo:8.0-noble"
+    container_name: "init-mongodb"
+    depends_on:
+      - mongodb # Ensures mongodb is started before this service
+    networks:
+      - default # Use the default network if your application is also on it, or define a custom one.
+    command: >
+      bash -c "
+        for i in `seq 1 10`; do
+          if mongosh --host mongodb --port 27017 --eval 'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)' &>/dev/null; then
+            echo 'MongoDB is up - initiating replica set';
+            mongosh --host mongodb --port 27017 --eval 'rs.initiate({ _id: \"rs0\", members: [{ _id: 0, host: \"mongodb:27017\" }] })';
+            break;
+          fi;
+          echo 'Waiting for MongoDB to be ready...';
+          sleep 5;
+        done
+      "
+    restart: "no" # This service should not restart after its job is done
+    
+  redis:
+    image: "redis:8.0-alpine"
+    container_name: "redis"
+    ports: ["6379:6379"]
     restart: always

@@ -6,11 +6,14 @@ const connect = async () => {
   });
 
   try {
-    await mongoose.connect(process.env.MONGO_URI ?? "");
+    await mongoose.connect(process.env.MONGO_URI ?? "", {
+      replicaSet: "rs0",
+      directConnection: true,
+    });
   } catch (error) {
     console.error("MongoDB connection error:", error);
   }
-}
+};
 
 const database = {
   connect,
