@@ -1,4 +1,3 @@
-import { redis } from "./infra/redis";
 import dotenv from "dotenv";
 import cors from "kcors";
 import Koa, { Context } from "koa";
@@ -6,11 +5,11 @@ import bodyParser from "koa-bodyparser";
 import { graphqlHTTP } from "koa-graphql";
 import KoaLogger from "koa-logger";
 import Router from "koa-router";
-import mongoose from "mongoose";
 import { getUser } from "./auth";
 import { database } from "./infra/database";
-import { schema } from "./schema/schema";
+import { redis } from "./infra/redis";
 import { getStatus } from "./modules/status";
+import { schema } from "./schema/schema";
 
 dotenv.config();
 const app = new Koa();
@@ -66,8 +65,6 @@ const startServer = async () => {
 
   try {
     await database.connect();
-
-    await mongoose.connection.db?.dropDatabase();
 
     app.listen(PORT, () => {
       console.log(`Server running on http://localhost:${PORT}`);
