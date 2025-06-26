@@ -6,12 +6,14 @@ type TestUser = {
   name?: string;
   email?: string;
   password?: string;
+  balance?: number;
 };
 
 export const createUser = async ({
   name,
   email,
   password,
+  balance,
 }: TestUser = {}): Promise<IUser> => {
   const fakeUsername = faker.internet.username();
   const sanitizedUsername = fakeUsername.replace(/[._-]/g, "");
@@ -20,6 +22,7 @@ export const createUser = async ({
     name: name || sanitizedUsername,
     email: email || getUniqueFakeEmail(),
     password: password || "password",
+    balance: balance || 0,
   }).save();
 
   const userPlainObject = newUser.toObject();
