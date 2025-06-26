@@ -1,3 +1,4 @@
+import { redis } from "./infra/redis";
 import dotenv from "dotenv";
 import cors from "kcors";
 import Koa, { Context } from "koa";
@@ -9,6 +10,7 @@ import mongoose from "mongoose";
 import { getUser } from "./auth";
 import { database } from "./infra/database";
 import { schema } from "./schema/schema";
+import { getStatus } from "./modules/status";
 
 dotenv.config();
 const app = new Koa();
@@ -25,29 +27,7 @@ app.use(
 
 const router = new Router();
 
-router.get("/status", async (ctx) => {
-  const updatedAt = new Date().toISOString();
-
-  await database.connect();
-
-  const mongooseVersionInfo = await mongoose.connection.db
-    ?.admin()
-    .serverInfo();
-  const mongooseStatusInfo = await mongoose.connection.db
-    ?.admin()
-    .serverStatus();
-
-  ctx.status = 200;
-  ctx.body = {
-    updated_at: updatedAt,
-    dependencies: {
-      database: {
-        status: mongooseStatusInfo?.ok === 1 ? "connected" : "disconnected",
-        version: mongooseVersionInfo?.version,
-      },
-    },
-  };
-});
+router.get("/status", getStatus);
 
 export const setCookie =
   (context: Context) => (cookieName: string, token: string) => {
@@ -73,7 +53,7 @@ router.all(
     return {
       schema,
       graphiql: true,
-      context: { user, setCookie: setCookie(koaContext) },
+      context: { user, setCookie: setCookie(koaContext), redis },
     };
   })
 );
