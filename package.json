@@ -4,7 +4,8 @@
   "description": "",
   "scripts": {
     "test:watch": "jest --watchAll --runInBand --verbose",
-    "services:detached": "docker compose -f ./compose.yaml up -d"
+    "services:detached": "docker compose -f ./compose.yaml up -d",
+    "services:down": "docker compose -f ./compose.yaml down"
   },
   "keywords": [],
   "author": "",
