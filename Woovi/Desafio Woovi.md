@@ -264,3 +264,219 @@ console.log(newUser._id); // 685620640349c1b4f47dec2b
 ```
 
 Agora sim! Antes eu estava executando a `UserRegisterWithEmailMutation` antes de poder fazer uma query com `node`, era a única forma de retornar um usuário com um `globalIdField`, agora o helper `createUser` também está retornando um identificador global válido reduzindo bastante do ruído da leitura do teste.
+
+### O módulo `transaction`
+
+O desafio requer que a réplica permita:
+
+- Enviar uma transação
+- Receber uma transação
+- Calcular o saldo disponível de uma conta.
+
+Para atender esses objetivos de forma mais objetiva possível criei o `Model` com as seguintes propriedades: `sender`, `receiver`, `amount` e `idempotencyKey`.
+
+#### Idempotency Key
+
+Ouvi falar pela primeira vez há pouco meses, no X, acho que foi em algum comentário do [Sam](https://x.com/samsantosb), mas a melhor explicação que vi foi [num vídeo do Galego](https://youtu.be/YNHKO_74sLU). O vídeo sugere duas formas de criar chaves de idempotência, a primeira é utilizando um `UUID`, e a segunda é uma chave composta. Um exemplo de chave composta seria gerando um hash de propriedades que identificam a transação: 
+
+```TypeScript
+const operationId = `${senderId}${receiverId}${amount}${hour}`;
+const key = crypto.createHash('sha256').update(operationId).digest('hex');
+```
+
+Quero fazer uma validação para não permitir que uma mesma operação não seja concretizada se a mesma `idempotencyKey` for enviada num período de **5 minutos**. Encontrei duas formas de fazer isso, ambas utilizando **TTL**, a primeira - e mais recomendada, utilizando [Redis](https://redis.io/), a segunda utilizando mongoose, criando um `Model` separado incluindo uma `key` e a propriedade `createdAt` com um `expires` setada em `300` - o tempo do expires é medido em segundos, com 300 equivalendo aos 5 minutos que busco.
+
+Decidi fazer a implementação utilizando Redis, pelos seguintes motivos:
+
+1. Não queria criar uma tabela separada só para isso.
+2. A implementação com `mongoose` utilizaria `try/catch` 
+3. Curiosidade - nunca utilizei Redis antes.
+
+#### TransationTransferMutation
+
+Até agora essa foi a parte mais densa de coisas para fazer. Essa é a parte mais importante do sistema e várias garantias precisam ser implementadas e testadas. Minha primeira implementação foi feita dessa forma:
+
+```TypeScript
+const redisKey = `transaction_lock:${idempotencyKey}`;
+const wasSet = await context.redis.set(redisKey, "1", "EX", 300, "NX");  
+
+if (!wasSet) {
+  return {
+	error: "Duplicate transaction detected. Try again later.",
+  };
+}
+
+const sender = await UserModel.findById(senderId);
+const receiver = await UserModel.findById(receiverId);
+
+// Validações
+
+sender.balance -= amount;
+receiver.balance += amount;
+
+await sender.save();
+await receiver.save();
+```
+
+A parte do lock me agradou, mas a parte da transferência nem tanto. Estava feio e funcionava, mas parecia errado. Aí que entra o [`updateOne()`](https://www.geeksforgeeks.org/mongoose-updateone-function/) e a segunda implementação - já com a criação da transação:
+
+```TypeScript
+// Lock via chave de idempotência
+// Validações
+
+await UserModel.updateOne(
+  { _id: senderId, balance: { $gte: amount } },
+  { $inc: { balance: -amount } },
+);
+
+await UserModel.updateOne(
+  { _id: receiverId },
+  { $inc: { balance: amount } },
+);
+
+const transaction = new TransactionModel({ 
+  sender: senderId,
+  receiver: receiverId,
+  amount,
+});
+
+await transaction.save()
+```
+
+Não demorou muito pra surgir a pergunta "e se um desses updates falhar?". Bom, eu não havia implementado uma forma de fazer rollback, então...
+
+##### `startSession`, `startTransaction`, `commitTransaction`,`abortTransaction` `endSession`
+
+O mongoose fornece a opção de criar uma `session`, como [explicado na documentação](https://mongoosejs.com/docs/transactions.html), essa `sessions` serve para: **criar uma transação**, **fazer o commit da transação se ela suceder** ou **abortar a transação caso alguma operação dê `throw`**.
+
+```TypeScript
+const session = await mongoose.startSession();
+session.startTransaction();
+
+try { 
+  // Lock via chave de idempotência
+  // Validações
+  
+  await UserModel.updateOne(
+	{ _id: senderId, balance: { $gte: amount } },
+	{ $inc: { balance: -amount } },
+	{ session }
+  );
+
+  await UserModel.updateOne(
+	{ _id: receiverId },
+	{ $inc: { balance: amount } },
+	{ session }
+  );
+
+  const transaction = new TransactionModel({ 
+	sender: senderId,
+	receiver: receiverId,
+	amount,	
+  });
+
+  await transaction.save({ session })
+  
+  await session.commitTransaction();
+} catch {
+  await session.abortTransaction();
+  await context.redis.del(redisKey);
+}
+```
+
+Existem detalhes de implementação omitidos para deixar a leitura mais concisa, mas agora, para que a transação realmente ocorra, todas as operações incluídas na `session` devem dar certo. Uma nova linha foi adicionada, para que o _lock_ não seja mantido quando a operação falhar e o usuário possa tentar novamente.
+
+###### Replica Set
+
+Para que a `session` possa ser utilizada, a instância do banco deve ter sua conexão estabelecida com um conjunto de réplicas(_replica set_), mudanças no `compose.yaml` e nas configurações do banco foram necessárias, passei por diversos problemas para estabelecer essa conexão com sucesso e só quando achei [essa resposta no StackOverflow](https://stackoverflow.com/a/71106644) que consegui fazer dar certo - sim, StackOverflow na época das LLMs.
+
+##### Testes
+
+1. `should successfully send a transaction`
+2. `should successfully send a transaction and lock the same transaction for being sent twice`
+3. `should return an error when sender is not found`
+4. `should return an error when sender don't have enough balance`
+5. `should return an error when receiver is not found`
+6. `should return an error when sender and receiver are the same`
+7. `should return an error when something goes wrong`
+8. `should allow multiple transactions from same sender and receiver with different amounts being sent concurrently`
+
+Todos os testes passaram de primeira, **com exceção o número 8**.
+
+```Bash
+MongoServerError: Caused by :: Write conflict during plan execution and yielding is disabled. :: Please retry your operation or multi-document transaction.
+```
+
+Conflito na escrita. Bom, como o erro sugeriu, parti para a implementação de uma lógica de retry. As diff do update seria basicamente isso:
+
+```TypeScript
+// Lock via chave de idempotência
+
+let retries = 0;
+let transactionResult: any = {}
+
+while (retries < MAX_TRANSACTIONS_RETRIES) {
+  // Criação da session
+  try { 
+	
+  // Validações 
+  // Exemplo de quando há erro:
+  if (!sender) {
+    await session.abortTransaction();
+	transactionResult = { error: "Sender not found."}
+	break;
+  }
+  
+  // Aplicação das mudanças e criação da transação.
+  const updateSenderResult = await UserModel.updateOne(
+	{ _id: senderId, balance: { $gte: sender.balance } },
+	{ $inc: { balance: -amount } },
+	{ session }
+  );
+  
+  if (updateSenderResult.modifiedCount === 0) {
+	// Erro que causa um retry.
+	throw new Error("BalanceConflict.");
+  }
+
+  // Quando não há erro:
+  transactionResult = {
+    id: transaction._id,
+	success: "Transaction sent successfully.",
+  };
+  break;
+  } catch {
+  await session.abortTransaction();
+  if (isBalanceConflict(error) || isWriteConflict(error)) {
+	retries++;
+	await new Promise((resolve) =>
+	  setTimeout(resolve, RETRY_DELAY_IN_MS)
+	);
+	continue;
+  }
+
+  return {
+	error: "Transaction failed. Please try again.",
+  };
+}
+
+if (hasNotCompletedTransaction(transactionResult)) {
+  transactionResult = {
+	error: "Transaction failed after multiple retries. Please try again later.",
+  };
+  
+  await context.redis.del(redisKey);
+}
+
+return transactionResult;
+```
+
+###### Testes adicionais
+
+9. `should return an error for a zero amount transaction`
+10. `should return an error for a negative amount transaction`
+11. `should correctly handle concurrent transfers from multiple senders to a single receiver`
+12. `should correctly process bidirectional concurrent transactions for a single user`
+13. `should fail concurrent transfers when sender has insufficient balance`
+
+> A autenticação está implementada, desativei a checagem apenas no ambiente de desenvolvimento a partir do valor `NODE_ENV === "development`.

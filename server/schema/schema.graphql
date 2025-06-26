@@ -31,102 +31,291 @@ type PageInfo {
 }
 
 """
-User data
+User data and profile information.
 """
 type User implements Node {
   """
-  The ID of an object
+  The unique identifier for the user.
   """
   id: ID!
 
   """
-  mongoose _id
+  The MongoDB document ID for the user.
   """
   _id: String!
+
+  """
+  The name of the user.
+  """
   name: String
+
+  """
+  The email address of the user.
+  """
   email: String
+
+  """
+  The current balance of the user's account.
+  """
   balance: Int
+
+  """
+  The timestamp when the user account was created.
+  """
   createdAt: String
+
+  """
+  The timestamp when the user account was last updated.
+  """
   updatedAt: String
 }
 
+"""
+Input for registering a new user with an email and password.
+"""
 input UserRegisterWithEmailInput {
+  """
+  The name of the user.
+  """
   name: String!
+
+  """
+  The email address for the new user.
+  """
   email: String!
+
+  """
+  The password for the new user.
+  """
   password: String!
-  clientMutationId: String
-}
-
-type UserRegisterWithEmailPayload {
-  token: String
-  me: User
 
   """
-  Default error field resolver.
+  A unique ID for the client mutation.
   """
-  error: String
-
-  """
-  Default success field resolver.
-  """
-  success: String
-  clientMutationId: String
-}
-
-input UserLoginWithEmailInput {
-  email: String!
-  password: String!
-  clientMutationId: String
-}
-
-type UserLoginWithEmailPayload {
-  token: String
-  me: User
-
-  """
-  Default error field resolver.
-  """
-  error: String
-
-  """
-  Default success field resolver.
-  """
-  success: String
   clientMutationId: String
 }
 
 """
-The root of all queries
+Payload for the UserRegisterWithEmail mutation.
+"""
+type UserRegisterWithEmailPayload {
+  """
+  The authentication token for the newly registered user.
+  """
+  token: String
+
+  """
+  The details of the newly registered user.
+  """
+  me: User
+
+  """
+  A field for returning any errors during registration.
+  """
+  error: String
+
+  """
+  A field indicating successful registration.
+  """
+  success: String
+
+  """
+  The unique ID for the client mutation, echoed back.
+  """
+  clientMutationId: String
+}
+
+"""
+Input for logging in an existing user with an email and password.
+"""
+input UserLoginWithEmailInput {
+  """
+  The email address of the user.
+  """
+  email: String!
+
+  """
+  The password of the user.
+  """
+  password: String!
+
+  """
+  A unique ID for the client mutation.
+  """
+  clientMutationId: String
+}
+
+"""
+Payload for the UserLoginWithEmail mutation.
+"""
+type UserLoginWithEmailPayload {
+  """
+  The authentication token for the logged-in user.
+  """
+  token: String
+
+  """
+  The details of the logged-in user.
+  """
+  me: User
+
+  """
+  A field for returning any errors during login.
+  """
+  error: String
+
+  """
+  A field indicating successful login.
+  """
+  success: String
+
+  """
+  The unique ID for the client mutation, echoed back.
+  """
+  clientMutationId: String
+}
+
+"""
+Represents a financial transaction between users.
+"""
+type Transaction implements Node {
+  """
+  The unique identifier for the transaction.
+  """
+  id: ID!
+
+  """
+  The MongoDB document ID for the transaction.
+  """
+  _id: String!
+
+  """
+  The user who initiated the transaction and sent the funds.
+  """
+  sender: User
+
+  """
+  The user who received the funds in the transaction.
+  """
+  receiver: User
+
+  """
+  The amount of money transferred in the transaction.
+  """
+  amount: Int
+
+  """
+  The timestamp when the transaction was created.
+  """
+  createdAt: String
+
+  """
+  The timestamp when the transaction was last updated.
+  """
+  updatedAt: String
+}
+
+"""
+Input for initiating a money transfer between users.
+"""
+input TransactionTransferInput {
+  """
+  The unique ID of the user initiating the transfer (sender).
+  """
+  senderId: ID!
+
+  """
+  The unique ID of the user who will receive the transferred funds.
+  """
+  receiverId: ID!
+
+  """
+  The amount of money to transfer.
+  """
+  """
+  The amount of money to transfer.
+  """
+  amount: Int!
+
+  """
+  A unique ID for the client mutation.
+  """
+  clientMutationId: String
+}
+
+"""
+Payload for the TransactionTransfer mutation.
+"""
+type TransactionTransferPayload {
+  """
+  The details of the newly created transaction.
+  """
+  transaction: Transaction
+
+  """
+  A field for returning any errors during the transfer.
+  """
+  error: String
+
+  """
+  A field indicating successful transfer.
+  """
+  success: String
+
+  """
+  The unique ID for the client mutation, echoed back.
+  """
+  clientMutationId: String
+}
+
+"""
+The root of all queries in the API.
 """
 type Query {
   """
-  Fetches an object given its ID
+  Fetches an object by its global unique ID.
   """
   node(
     """
-    The ID of an object
+    The global unique ID of the object to fetch.
     """
     id: ID!
   ): Node
 
   """
-  Fetches objects given their IDs
+  Fetches multiple objects given a list of their global unique IDs.
   """
   nodes(
     """
-    The IDs of objects
+    A list of global unique IDs of the objects to fetch.
     """
     ids: [ID!]!
   ): [Node]!
 
   """
-  Fetches the current logged user
+  Fetches the current logged-in user's profile information.
   """
   me: User
 }
 
+"""
+The root of all mutations (write operations) in the API.
+"""
 type Mutation {
+  """
+  Allows a user to log in with their email and password.
+  """
+  UserLoginWithEmail(input: UserLoginWithEmailInput!): UserLoginWithEmailPayload
+
+  """
+  Allows a new user to register with an email, password, and name.
+  """
   UserRegisterWithEmail(
-    input: UserLoginWithEmailInput!
-  ): UserLoginWithEmailPayload
+    input: UserRegisterWithEmailInput!
+  ): UserRegisterWithEmailPayload
+
+  """
+  Allows a logged-in user to transfer an amount of money to another user.
+  """
+  TransactionTransfer(input: TransactionTransferInput!): TransactionTransferPayload
 }
