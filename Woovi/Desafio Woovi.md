@@ -480,3 +480,13 @@ return transactionResult;
 13. `should fail concurrent transfers when sender has insufficient balance`
 
 > A autenticação está implementada, desativei a checagem apenas no ambiente de desenvolvimento a partir do valor `NODE_ENV === "development`.
+
+### Finalizando o backend
+
+Chegou o momento de passar o pente fino, agora é a hora de adicionar as coisas importantes que ficaram faltando. Adicionei o loader para `transaction` na implementação do `node` e também criei o respectivo teste, disponibilizei o JSON para importação no Postman e fiz a criação do `README.md`
+
+#### Deploy
+
+Isso é algo que eu ainda não sei se vou fazer, no momento vou fazer o envio do link com o repositório, somente com o backend, e ver se consigo um feedback.
+
+> Foi divertido.

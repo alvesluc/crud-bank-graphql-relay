@@ -1,0 +1,733 @@
+{
+	"info": {
+		"_postman_id": "13dd5531-2bc6-4879-b367-4b742f1fd9bb",
+		"name": "Woovi Challenge",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "46207159"
+	},
+	"item": [
+		{
+			"name": "status",
+			"item": [
+				{
+					"name": "status",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/status",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"status"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "successful-request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/status",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"status"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "142"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 26 Jun 2025 01:45:57 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"updated_at\": \"2025-06-26T01:45:56.965Z\",\n    \"dependencies\": {\n        \"database\": {\n            \"status\": \"connected\",\n            \"version\": \"8.0.10\"\n        },\n        \"redis\": {\n            \"status\": \"connected\"\n        }\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "query",
+			"item": [
+				{
+					"name": "node",
+					"item": [
+						{
+							"name": "user",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Cookie",
+										"value": "{{authCookie}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "query GetNode($id: ID!) {\n    node(id: $id) {\n        ... on User {\n            id\n            name\n            email\n            balance\n            createdAt\n            updatedAt\n        }\n    }\n}",
+										"variables": "{\n    \"id\": \"VXNlcjo2ODVjYWFmZWIzODc0NDk1Y2U1MTU2MWE=\"\n}"
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/graphql",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "successful-request",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "Cookie",
+												"value": "{{authCookie}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "graphql",
+											"graphql": {
+												"query": "query GetNode($id: ID!) {\n    node(id: $id) {\n        ... on User {\n            id\n            name\n            email\n            balance\n            createdAt\n            updatedAt\n        }\n    }\n}",
+												"variables": "{\n    \"id\": \"VXNlcjo2ODVjYWFmZWIzODc0NDk1Y2U1MTU2MWE=\"\n}"
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/graphql",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"graphql"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "203"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 26 Jun 2025 02:56:55 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"data\": {\n        \"node\": {\n            \"id\": \"VXNlcjo2ODVjYWFmZWIzODc0NDk1Y2U1MTU2MWE=\",\n            \"name\": \"Lucas Alves\",\n            \"email\": \"lucas@mail.com\",\n            \"balance\": 0,\n            \"createdAt\": \"2025-06-26T02:05:50.302Z\",\n            \"updatedAt\": \"2025-06-26T02:05:50.302Z\"\n        }\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "transaction",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Cookie",
+										"value": "{{authCookie}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "query GetNode($id: ID!) {\n    node(id: $id) {\n        ... on Transaction {\n            id\n            sender {\n                id\n                name\n            }\n            receiver {\n                id\n                name\n            }\n            amount\n            createdAt\n            updatedAt\n        }\n    }\n}",
+										"variables": "{\n    \"id\": \"VHJhbnNhY3Rpb246Njg1Y2JiMzA3MjlmYjNiM2I1YjdkN2Uw\"\n}"
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/graphql",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "successful-request",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json",
+												"type": "text"
+											},
+											{
+												"key": "Cookie",
+												"value": "{{authCookie}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "graphql",
+											"graphql": {
+												"query": "query GetNode($id: ID!) {\n    node(id: $id) {\n        ... on Transaction {\n            id\n            sender {\n                id\n                name\n            }\n            receiver {\n                id\n                name\n            }\n            amount\n            createdAt\n            updatedAt\n        }\n    }\n}",
+												"variables": "{\n    \"id\": \"VHJhbnNhY3Rpb246Njg1Y2JiMzA3MjlmYjNiM2I1YjdkN2Uw\"\n}"
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/graphql",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"graphql"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "270"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 26 Jun 2025 03:22:16 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"data\": {\n        \"node\": {\n            \"id\": \"VHJhbnNhY3Rpb246Njg1Y2JiMzA3MjlmYjNiM2I1YjdkN2Uw\",\n            \"sender\": {\n                \"id\": \"VXNlcjo2ODVjYjk4OGQ2YjhjZDIwMmU1YWRmNTY=\",\n                \"name\": \"LarissaHaag\"\n            },\n            \"receiver\": {\n                \"id\": \"VXNlcjo2ODVjYWFmZWIzODc0NDk1Y2U1MTU2MWE=\",\n                \"name\": \"Lucas Alves\"\n            },\n            \"amount\": 1,\n            \"createdAt\": \"2025-06-26T03:14:56.229Z\",\n            \"updatedAt\": \"2025-06-26T03:14:56.229Z\"\n        }\n    }\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "me",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Cookie",
+								"value": "woovi_playground_replica=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NWNhYWZlYjM4NzQ0OTVjZTUxNTYxYSIsImlhdCI6MTc1MDkwNDM2MX0.s24DSH0sQTlRtImc4BCEx1fIpiPMm2jceLuquIyO2s4; Path=/; HttpOnly;",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "query {\n    me {\n        id\n        _id\n        name\n        email\n        balance\n        createdAt\n        updatedAt\n    }\n}",
+								"variables": ""
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "successful-request",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Cookie",
+										"value": "{{authCookie}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "query {\n    me {\n        id\n        _id\n        name\n        email\n        balance\n        createdAt\n        updatedAt\n    }\n}",
+										"variables": ""
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/graphql",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "234"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 26 Jun 2025 02:27:41 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"me\": {\n            \"id\": \"VXNlcjo2ODVjYWFmZWIzODc0NDk1Y2U1MTU2MWE=\",\n            \"_id\": \"685caafeb3874495ce51561a\",\n            \"name\": \"Lucas Alves\",\n            \"email\": \"lucas@mail.com\",\n            \"balance\": 0,\n            \"createdAt\": \"2025-06-26T02:05:50.302Z\",\n            \"updatedAt\": \"2025-06-26T02:05:50.302Z\"\n        }\n    }\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "user",
+			"item": [
+				{
+					"name": "mutations",
+					"item": [
+						{
+							"name": "UserRegisterWithEmail",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation UserRegisterWithEmailMutation($name: String!, $email: String!, $password: String!) {\n  UserRegisterWithEmail(input: {\n    name: $name,\n    email: $email,\n    password: $password\n  }) {\n\ttoken\n    me {\n      id\n      _id\n      name\n      email\n      createdAt\n      updatedAt\n    }\n    error\n    success\n    clientMutationId\n  }\n}",
+										"variables": "{\n  \"name\": \"Lucas Alves\",\n  \"email\": \"lucas@mail.com\",\n  \"password\": \"password\"\n}"
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/graphql",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "successful-request",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "graphql",
+											"graphql": {
+												"query": "mutation UserRegisterWithEmailMutation($name: String!, $email: String!, $password: String!) {\n  UserRegisterWithEmail(input: {\n    name: $name,\n    email: $email,\n    password: $password\n  }) {\n\ttoken\n    me {\n      id\n      _id\n      name\n      email\n      createdAt\n      updatedAt\n    }\n    error\n    success\n    clientMutationId\n  }\n}",
+												"variables": "{\n  \"name\": \"Lucas Alves\",\n  \"email\": \"lucas@mail.com\",\n  \"password\": \"password\"\n}"
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/graphql",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"graphql"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Set-Cookie",
+											"value": "woovi_playground_replica=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NWNhYWZlYjM4NzQ0OTVjZTUxNTYxYSIsImlhdCI6MTc1MDkwMzU1MH0.RtIzBHJsLyiFNbcHv2ESiA7xcNNHSnA5B8ymrtgnxW4; path=/; samesite=lax; httponly"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "486"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 26 Jun 2025 02:05:50 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"data\": {\n        \"UserRegisterWithEmail\": {\n            \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NWNhYWZlYjM4NzQ0OTVjZTUxNTYxYSIsImlhdCI6MTc1MDkwMzU1MH0.RtIzBHJsLyiFNbcHv2ESiA7xcNNHSnA5B8ymrtgnxW4\",\n            \"me\": {\n                \"id\": \"VXNlcjo2ODVjYWFmZWIzODc0NDk1Y2U1MTU2MWE=\",\n                \"_id\": \"685caafeb3874495ce51561a\",\n                \"name\": \"Lucas Alves\",\n                \"email\": \"lucas@mail.com\",\n                \"createdAt\": \"2025-06-26T02:05:50.302Z\",\n                \"updatedAt\": \"2025-06-26T02:05:50.302Z\"\n            },\n            \"error\": null,\n            \"success\": \"User registered successfully.\",\n            \"clientMutationId\": null\n        }\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "UserLoginWithEmail",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation UserLoginWithEmailMutation($email: String!, $password: String!) {\n  UserLoginWithEmail(input: {\n    email: $email,\n    password: $password\n  }) {\n\ttoken\n    me {\n      id\n      _id\n      name\n      email\n      createdAt\n      updatedAt\n    }\n    error\n    success\n    clientMutationId\n  }\n}",
+										"variables": "{\n  \"email\": \"lucas@mail.com\",\n  \"password\": \"password\"\n}"
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/graphql",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "successful-response",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "Content-Type",
+												"value": "application/json",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "graphql",
+											"graphql": {
+												"query": "mutation UserLoginWithEmailMutation($email: String!, $password: String!) {\n  UserLoginWithEmail(input: {\n    email: $email,\n    password: $password\n  }) {\n\ttoken\n    me {\n      id\n      _id\n      name\n      email\n      createdAt\n      updatedAt\n    }\n    error\n    success\n    clientMutationId\n  }\n}",
+												"variables": "{\n  \"email\": \"lucas@mail.com\",\n  \"password\": \"password\"\n}"
+											}
+										},
+										"url": {
+											"raw": "{{baseUrl}}/graphql",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"graphql"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Vary",
+											"value": "Origin"
+										},
+										{
+											"key": "Set-Cookie",
+											"value": "woovi_playground_replica=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NWNhYWZlYjM4NzQ0OTVjZTUxNTYxYSIsImlhdCI6MTc1MDkwNDM2MX0.s24DSH0sQTlRtImc4BCEx1fIpiPMm2jceLuquIyO2s4; path=/; samesite=lax; httponly"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "477"
+										},
+										{
+											"key": "Date",
+											"value": "Thu, 26 Jun 2025 02:19:21 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"data\": {\n        \"UserLoginWithEmail\": {\n            \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NWNhYWZlYjM4NzQ0OTVjZTUxNTYxYSIsImlhdCI6MTc1MDkwNDM2MX0.s24DSH0sQTlRtImc4BCEx1fIpiPMm2jceLuquIyO2s4\",\n            \"me\": {\n                \"id\": \"VXNlcjo2ODVjYWFmZWIzODc0NDk1Y2U1MTU2MWE=\",\n                \"_id\": \"685caafeb3874495ce51561a\",\n                \"name\": \"Lucas Alves\",\n                \"email\": \"lucas@mail.com\",\n                \"createdAt\": \"2025-06-26T02:05:50.302Z\",\n                \"updatedAt\": \"2025-06-26T02:05:50.302Z\"\n            },\n            \"error\": null,\n            \"success\": \"Logged in successfully.\",\n            \"clientMutationId\": null\n        }\n    }\n}"
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "transaction",
+			"item": [
+				{
+					"name": "TransactionTransfer",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json",
+								"type": "text"
+							},
+							{
+								"key": "Cookie",
+								"value": "{{authCookie}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "graphql",
+							"graphql": {
+								"query": "mutation TransactionTransferMutation($senderId: String!, $receiverId: String!, $amount: Int!, $idempotencyKey: String!) {\n  TransactionTransfer(input: {\n    senderId: $senderId,\n    receiverId: $receiverId,\n    amount: $amount,\n    idempotencyKey: $idempotencyKey\n  }) {\n    transaction {\n      id\n      _id\n      sender {\n        _id\n        name\n      }\n      receiver {\n        _id\n        name\n      }\n      amount\n      createdAt\n      updatedAt\n    }\n  }\n}\n",
+								"variables": "{\n    \"senderId\": \"685cb988d6b8cd202e5adf56\",\n    \"receiverId\": \"685caafeb3874495ce51561a\",\n    \"amount\": 1,\n    \"idempotencyKey\": \"40b5929a5e4740f76ad328725767e65f882a12b2326f23107fc0f51734039a78\"\n}"
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/graphql",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"graphql"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "successful-response",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "Cookie",
+										"value": "{{authCookie}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "graphql",
+									"graphql": {
+										"query": "mutation TransactionTransferMutation($senderId: String!, $receiverId: String!, $amount: Int!, $idempotencyKey: String!) {\n  TransactionTransfer(input: {\n    senderId: $senderId,\n    receiverId: $receiverId,\n    amount: $amount,\n    idempotencyKey: $idempotencyKey\n  }) {\n    transaction {\n      id\n      _id\n      sender {\n        _id\n        name\n      }\n      receiver {\n        _id\n        name\n      }\n      amount\n      createdAt\n      updatedAt\n    }\n  }\n}\n",
+										"variables": "{\n    \"senderId\": \"685cb988d6b8cd202e5adf56\",\n    \"receiverId\": \"685caafeb3874495ce51561a\",\n    \"amount\": 80,\n    \"idempotencyKey\": \"40b5929a5e4740b73ad328725767e65f882a12b2326f23107fc0f51734039a78\"\n}"
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/graphql",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"graphql"
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Vary",
+									"value": "Origin"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "361"
+								},
+								{
+									"key": "Date",
+									"value": "Thu, 26 Jun 2025 03:12:08 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"data\": {\n        \"TransactionTransfer\": {\n            \"transaction\": {\n                \"id\": \"VHJhbnNhY3Rpb246Njg1Y2JhODgzZWQ3N2Y4ZDQ5MTdlYWUz\",\n                \"_id\": \"685cba883ed77f8d4917eae3\",\n                \"sender\": {\n                    \"_id\": \"685cb988d6b8cd202e5adf56\",\n                    \"name\": \"LarissaHaag\"\n                },\n                \"receiver\": {\n                    \"_id\": \"685caafeb3874495ce51561a\",\n                    \"name\": \"Lucas Alves\"\n                },\n                \"amount\": 80,\n                \"createdAt\": \"2025-06-26T03:12:08.681Z\",\n                \"updatedAt\": \"2025-06-26T03:12:08.681Z\"\n            }\n        }\n    }\n}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:4000",
+			"type": "string"
+		},
+		{
+			"key": "authCookie",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
