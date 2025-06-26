@@ -17,6 +17,7 @@
     "dotenv": "^16.5.0",
     "graphql": "^16.11.0",
     "graphql-relay": "^0.10.2",
+    "ioredis": "^5.6.1",
     "jsonwebtoken": "^9.0.2",
     "kcors": "^2.2.2",
     "koa": "^3.0.0",
