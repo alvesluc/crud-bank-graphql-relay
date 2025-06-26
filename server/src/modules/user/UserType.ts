@@ -4,12 +4,11 @@ import {
   GraphQLObjectType,
   GraphQLString,
 } from "graphql";
-import { IUser } from "./UserModel";
 import { globalIdField } from "graphql-relay";
 import { nodeInterface } from "../node/node";
-import { GraphQLContext } from "../../graphQLContext";
+import { IUser } from "./UserModel";
 
-export const UserType: GraphQLObjectType<IUser, GraphQLContext> =
+export const UserType: GraphQLObjectType<IUser> =
   new GraphQLObjectType<IUser>({
     name: "User",
     fields: () => ({
