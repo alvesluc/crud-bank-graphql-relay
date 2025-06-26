@@ -12,6 +12,8 @@ describe("GET `/status`", () => {
 
       expect(responseBody.dependencies.database.status).toBe("connected")
       expect(responseBody.dependencies.database.version).toContain("8.0");
+
+      expect(responseBody.dependencies.redis.status).toBe("connected");
     });
   });
 });
