@@ -1,6 +1,6 @@
 import { fromGlobalId, nodeDefinitions } from "graphql-relay";
+import { TransactionModel } from "../transaction/TransactionModel";
 import { UserModel } from "../user/UserModel";
-import { UserType } from "../user/UserType";
 
 const { nodeInterface, nodeField, nodesField } = nodeDefinitions(
   async (globalId) => {
@@ -10,15 +10,24 @@ const { nodeInterface, nodeField, nodesField } = nodeDefinitions(
       return await UserModel.findById(id);
     }
 
+    if (type === "Transaction") {
+      return await TransactionModel.findById(id);
+    }
+
     return null;
   },
   (obj) => {
     if (obj instanceof UserModel) {
-      return UserType.name;
+      return "User";
+    }
+
+    if (obj instanceof TransactionModel) {
+      return "Transaction";
     }
 
     return undefined;
   }
 );
 
-export { nodeInterface, nodeField, nodesField };
+export { nodeField, nodeInterface, nodesField };
+
