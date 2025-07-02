@@ -6,7 +6,7 @@ type ReactRelayProviderProps = {
   children: React.ReactNode;
 };
 
-export function RelayEnvironment({ children }: ReactRelayProviderProps) {
+export function RelayEnvironmentProvider({ children }: ReactRelayProviderProps) {
   return (
     <ReactRelayContext.Provider value={{ environment: AppEnvironment }}>
       <Suspense fallback={null}>{children}</Suspense>

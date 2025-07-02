@@ -14,6 +14,7 @@ export default function HomeRoot() {
 
   if (data.me === null) {
     navigate("/sign-up", { replace: true });
+    return;
   }
 
   return <Outlet context={{ homeQueryRef }} />;

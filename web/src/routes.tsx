@@ -1,9 +1,9 @@
-import type { RouteObject } from "react-router";
+import HomeRoot from "@/components/home/HomeRoot";
+import HomePage, { HomeQuery } from "@/pages/home";
 import SignUpPage from "@/pages/sign-up";
-import HomeRoot from "./components/home/HomeRoot";
+import { AppEnvironment } from "@/relay/environment";
 import { loadQuery } from "react-relay";
-import { AppEnvironment } from "./relay/environment";
-import HomePage, { HomeQuery } from "./pages/home";
+import type { RouteObject } from "react-router";
 
 export const routes: RouteObject[] = [
   {

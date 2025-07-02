@@ -1,7 +1,4 @@
-import type {
-  UserRegisterWithEmailMutation,
-  UserRegisterWithEmailMutation$data,
-} from "@/__generated__/UserRegisterWithEmailMutation.graphql";
+import type { UserRegisterWithEmailMutation } from "@/__generated__/UserRegisterWithEmailMutation.graphql";
 import { UserRegisterWithEmail } from "@/components/sign-up/UserRegisterWithEmailMutation";
 import { Button } from "@/components/ui/button";
 import {
@@ -74,9 +71,7 @@ export default function SignUpPage() {
           password: values.password,
         },
       },
-      onCompleted: ({
-        UserRegisterWithEmail,
-      }: UserRegisterWithEmailMutation$data) => {
+      onCompleted: ({ UserRegisterWithEmail }) => {
         if (UserRegisterWithEmail?.error) {
           toast.error(UserRegisterWithEmail?.error);
           return;

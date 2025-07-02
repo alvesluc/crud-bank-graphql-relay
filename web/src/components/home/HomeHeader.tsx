@@ -7,7 +7,9 @@ export default function HomeHeader() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center space-x-3">
-            <BadgeDollarSign className="h-8 w-8 text-emerald-600" />
+            <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
+              <BadgeDollarSign className="size-8" />
+            </div>
             <h1 className="text-xl font-bold text-gray-900">Replica Woovi</h1>
           </div>
           <div className="flex items-center space-x-4">
