@@ -1,5 +1,8 @@
 import { createUser } from "./__tests__/createUser";
 import { database } from "./infra/database";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const seedDatabase = async () => {
   await database.connect();
@@ -25,7 +28,7 @@ const seedDatabase = async () => {
   console.log("User 2:");
   console.log(`  _id: ${user2._id}`);
   console.log(`  email: ${user2.email}`);
-  console.log("Important: For both users, the password is 'password'."); 
+  console.log("Important: For both users, the password is 'password'.");
 
   process.exit(0);
 };
