@@ -295,7 +295,7 @@ Decidi fazer a implementação utilizando Redis, pelos seguintes motivos:
 2. A implementação com `mongoose` utilizaria `try/catch` 
 3. Curiosidade - nunca utilizei Redis antes.
 
-#### TransationTransferMutation
+#### TransactionTransferMutation
 
 Até agora essa foi a parte mais densa de coisas para fazer. Essa é a parte mais importante do sistema e várias garantias precisam ser implementadas e testadas. Minha primeira implementação foi feita dessa forma:
 
@@ -496,4 +496,183 @@ Isso é algo que eu ainda não sei se vou fazer, no momento vou fazer o envio do
 
 ## Web
 
-NextJS, Sh
+A stack do frontend foi apresentada no início do documento, com exceção da "necessidade" do uso do [React Router](https://reactrouter.com/).
+
+### Vite, shadcn, Relay
+
+Se alguém, por curiosidade, olhar os commits da aplicação irá notar que há este commit: [feat(web): add functional `sign-up` and migrates from NextJS to Vite/React Router](https://github.com/alvesluc/crud-bank-graphql-relay/commit/28dda080ca9023a7490d5156ced3513426476642). E sim, os primeiros passos foram feitos com NextJS, levei em conta o fato de que a vaga sugere que o desafio utilize o boilerplate do [Woovi Playground](https://github.com/woovibr/woovi-playground), que utiliza NextJS e contradiz o requisito:
+
+ - Use Vite with React Router latest version
+
+Fiz a instalação do `shadcn` seguindo a [documentação](https://ui.shadcn.com/docs/installation/vite) - uma coleção de componentes que eu gosto muito de usar é a [Origin UI](https://originui.com/).
+
+A configuração do Relay:
+
+- [Configurar Vite para usar Relay](https://relay.dev/docs/getting-started/quick-start/#configure-vite-to-use-relay)
+- [Configurar o Relay Compiler](https://relay.dev/docs/guides/compiler/), aqui eu usei o [relay.config.js](https://github.com/sibelius/relay-workshop/blob/main/apps/next-app/relay.config.js) como base.
+- [Extensão VS Code](https://relay.dev/docs/editor-support/), um detalhe sobre essa extensão é que ela só funciona se o VS tiver o arquivo de configuração do Relay no root do projeto. Até então eu estava fazendo as alterações a partir do root do repositório e não entendia o motivo do autocomplete não estar funcionando.  Para ver funcionando é estar com o editor aberto na pasta `web` - `code web` e agora o autocomplete está disponível.
+
+> Há esse texto na parte de Setup da extensão: "Make sure you have at least one Relay config file somewhere in your project". E bom, estava "somewhere", mas não onde a extensão encontrava.
+
+Para fazer as queries com o Relay, você precisa configurar mais algumas coisinhas, sendo elas:
+
+- Uma [`FetchFunction`](https://github.com/alvesluc/crud-bank-graphql-relay/blob/main/web/src/relay/fetchGraphQL.ts);
+- Um [`Environment`](https://github.com/alvesluc/crud-bank-graphql-relay/blob/main/web/src/relay/environment.ts);
+- E um [`Provider`](https://github.com/alvesluc/crud-bank-graphql-relay/blob/main/web/src/relay/RelayEnvironmentProvider.tsx).
+
+### `sign-up`
+
+Criei uma página de cadastro simples, você preenche: nome, email e senha, faz o cadastro e é redirecionado para a área autenticada - utilizando o callback `onCompleted` da mutation.
+
+Como a autenticação é feita via cookies, precisei atualizar a configuração do CORS no server, antes estava configurado para `{origin: "*"}`, e foi atualizado para `{ origin: "http://localhost:5173", credentials: true }`
+
+### `home`
+
+#### Rotas e Preloaded Queries
+
+O tutorial do Relay inclui [exemplos visuais](https://relay.dev/docs/tutorial/queries-2/#preloaded-queries) que justificam a preferência por Preloaded Queries. Utilizei o [arquivo de rotas do `relay-workshop`](https://github.com/sibelius/relay-workshop/blob/main/apps/web/src/routes.tsx) como referência e tive meu primeiro contato com o `loader` do `react-router`. A configuração inicial que fiz para o `Environment` exportava a função `createEnvironment`, só que, para usar no loader eu precisei do `Environment` como singleton, utilizando o mesmo `Environment` no `ReactRelayContext.Provider` e no arquivo de rotas.
+
+```TypeScript
+...
+{
+  path: "/home",
+  element: <HomeRoot />,
+  loader: () => {
+	const homeQueryRef = loadQuery(
+	  AppEnvironment,
+	  HomeQuery,
+	  {},
+	  { fetchPolicy: "store-or-network" }
+	);
+	
+	return { homeQueryRef };
+  },
+... 
+```
+
+#### `HomeRoot`
+
+Responsável pela navegação quando não houver um usuário autenticado, o único detalhe que chama atenção aqui é o uso do `useLoaderData`, que recebe a `homeQueryRef` retornada pelo `loader`.
+
+```TypeScript
+type HomeRootLoaderData = {
+  homeQueryRef: PreloadedQuery<HomeQueryType>;
+};
+
+const { homeQueryRef } = useLoaderData<HomeRootLoaderData>();
+```
+
+#### `home`
+
+Diferente da implementação feita no  `HomeRoot`, para receber a `homeQueryRef` na página, primeiro temos que passar a `homeQueryRef` no `context` do `Outlet`:
+
+```TypeScript
+return <Outlet context={{ homeQueryRef }} />;
+```
+
+Assim, na home:
+
+```TypeScript
+type OutletContextType = {
+  homeQueryRef: PreloadedQuery<HomeQueryType>;
+};
+
+const { homeQueryRef } = useOutletContext<OutletContextType>();
+```
+
+> Note que agora usamos o **`useOutletContext`** ao invés do **`useLoaderData`**.
+
+Inicialmente, decidi que a home teria dois componentes, um para mostrar informações do usuário autenticado e um para realização da transação. A query da home havia ficado desta forma:
+
+```TypeScript
+export const HomeQuery = graphql`
+  query homeQuery {
+	me { 
+	  _id
+	  name
+	  email
+	  balance
+	}
+  } 
+`;
+```
+
+##### `AccountSummary`
+
+Um componente simples, só para mostrar o nome, email e saldo do usuário. Partindo para definição do `AccountSummaryFragment`:
+
+```TypeScript
+const AccountSummaryFragment = graphql`
+  fragment AccountSummaryFragment on User {
+	email
+	name
+	balance
+  }
+`;
+```
+
+Que gera a atualização na `HomeQuery`:
+
+```TypeScript
+export const HomeQuery = graphql`
+  query homeQuery {
+	me { 
+	  _id
+	  ...AccountSummaryFragment
+	}
+  } 
+`;
+```
+
+##### `TransactionForm`
+
+Outro componente simples, com dois inputs, um para o id de quem vai receber a transferência, e um para o valor da transferência. `TransactionFormFragment`:
+
+```TypeScript
+const TransactionFormFragment = graphql`
+  fragment TransactionFormFragment on User {
+	_id
+  }
+`;
+```
+
+Gerando a versão final da `HomeQuery`:
+
+```TypeScript
+export const HomeQuery = graphql`
+  query homeQuery {
+	me {
+	  ...AccountSummaryFragment 
+	  ...TransactionFormFragment
+	}
+  } 
+`;
+```
+
+###### `TransactionFormMutation` e `updater`
+
+Não citei anteriormente, mas o formulário presente no `sign-up` é validado usando `react-hook-form` e `zod`, adicionados quando fiz a [instalação do `form` do `shadcn`](https://ui.shadcn.com/docs/components/form). A validação no `TransactionForm` é feita da mesma forma, o `onSubmit` é responsável por chamar o `commitMutation` e o feedback ao usuário acontece a partir do `onCompleted`.
+
+Um detalhe que me incomodou foi justamente o fato de que, após a transação ser feita com sucesso, o saldo da conta não era atualizado. Antes de tudo a documentação explica a distinção entre _mutation_ e _update_:
+
+ - A _mutation_ is when you ask the server to perform some action that modifies data on the server. This is a feature of GraphQL that is analogous to an HTTP POST.
+ - An _update_ is when you modify Relay’s local client-side data store.
+
+A documentação do Relay inclui um [exemplo com `optimisticUpdater`](https://relay.dev/docs/tutorial/mutations-updates/#improving-the-ux-with-an-optimistic-updater), mas o que eu quero é apenas fazer o update quando a mutation for bem sucedida, resultando no seguinte trecho de código:
+
+```TypeScript
+updater: (store, response) => {
+  if (response?.TransactionTransfer?.success) {
+	const meRecord = store.get(ROOT_ID)?.getLinkedRecord("me");
+	
+	if (!meRecord) return;
+	
+	const currentBalance = meRecord.getValue("balance") as number;
+	const newBalance = currentBalance - amount;
+	
+	meRecord.setValue(newBalance, "balance");
+  }
+},
+```
+
+Com isso, o `balance`, utilizado no `AccountSummary` é atualizado e o usuário vê a mudança na interface imediatamente.
