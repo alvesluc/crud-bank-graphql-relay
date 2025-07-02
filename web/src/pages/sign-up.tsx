@@ -1,5 +1,8 @@
-"use client";
-
+import type {
+  UserRegisterWithEmailMutation,
+  UserRegisterWithEmailMutation$data,
+} from "@/__generated__/UserRegisterWithEmailMutation.graphql";
+import { UserRegisterWithEmail } from "@/components/sign-up/UserRegisterWithEmailMutation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,16 +11,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import {
-  BadgeDollarSign,
-  CircleCheckIcon,
-  EyeIcon,
-  EyeOffIcon,
-} from "lucide-react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import {
   Form,
   FormControl,
@@ -26,15 +19,20 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  BadgeDollarSign,
+  CircleCheckIcon,
+  EyeIcon,
+  EyeOffIcon,
+} from "lucide-react";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { useMutation } from "react-relay";
-import { UserRegisterWithEmail } from "@/components/sign-up/UserRegisterWithEmailMutation";
-import type {
-  UserRegisterWithEmailMutation,
-  UserRegisterWithEmailMutation$data,
-} from "@/__generated__/UserRegisterWithEmailMutation.graphql";
-import { toast } from "sonner";
 import { useNavigate } from "react-router";
+import { toast } from "sonner";
+import { z } from "zod";
 
 const registerFormSchema = z.object({
   name: z
