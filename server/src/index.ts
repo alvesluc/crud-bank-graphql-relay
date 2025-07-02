@@ -14,7 +14,7 @@ import { schema } from "./schema/schema";
 dotenv.config();
 const app = new Koa();
 
-app.use(cors({ origin: "*" }));
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(KoaLogger());
 app.use(
   bodyParser({
@@ -30,14 +30,13 @@ router.get("/status", getStatus);
 
 export const setCookie =
   (context: Context) => (cookieName: string, token: string) => {
-    const options = {
-      httpOnly: true,
-      secure: process.env.NODE_ENV !== "development",
-      sameSite: "lax" as "lax" | "strict" | "none",
-      path: "/",
-    };
+    const isDevelopment = process.env.NODE_ENV === "development";
 
-    context.cookies.set(cookieName, token, options);
+    context.cookies.set(cookieName, token, {
+      httpOnly: true,
+      secure: !isDevelopment,
+      path: "/",
+    });
   };
 
 router.all(

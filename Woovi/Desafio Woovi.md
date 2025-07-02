@@ -6,7 +6,10 @@ Tempo estimado de leitura: **26 minutos**.
 
 ## Introdução
 
-Esse será um resumo colocando em prática tudo que li sobre GraphQL e Relay. Mas antes disso, uma breve história - não quer saber como eu cheguei aqui? [Clique aqui](#bootstrapping) e você irá direto à mão na massa.
+Esse será um resumo colocando em prática tudo que li sobre GraphQL e Relay. Mas antes disso, uma breve história - não quer saber como eu cheguei aqui? Use um dos links abaixo:
+
+- [Server](#Bootstrapping) - NodeJS, Koa, MongoDB, GraphQL
+- [Web](#Web) - NextJS, React, Relay, shadcn
 
 Há algumas semanas vi um post no X sobre uma empresa que estava contratando ([Woovi](https://woovi.com)), o que me chamou atenção foi haver pessoas recomendando aplicar, uma grande chance de aprender coisas novas. Não foi a primeira vez que vi um post do [@sseraphini](https://x.com/sseraphini), então resolvi dar uma olhada no [repositório com as vagas disponíveis](https://github.com/woovibr/jobs/).
 
@@ -490,3 +493,7 @@ Chegou o momento de passar o pente fino, agora é a hora de adicionar as coisas 
 Isso é algo que eu ainda não sei se vou fazer, no momento vou fazer o envio do link com o repositório, somente com o backend, e ver se consigo um feedback.
 
 > Foi divertido.
+
+## Web
+
+NextJS, Sh

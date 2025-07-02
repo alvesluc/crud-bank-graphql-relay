@@ -78,8 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "right": {
     "id": "a1ce3831caf7fd3e",
@@ -171,8 +170,9 @@
   },
   "active": "1151977f6befe067",
   "lastOpenFiles": [
-    "server/src/__tests__/graphql/user/mutations/UserRegisterWithEmailMutationTest.test.ts.md",
+    "Untitled.md",
     "Desafio Woovi.md",
+    "server/src/__tests__/graphql/user/mutations/UserRegisterWithEmailMutationTest.test.ts.md",
     "server/src/__tests__/graphql/user/mutations",
     "server/src/__tests__/graphql/user",
     "server/src/__tests__/graphql",
