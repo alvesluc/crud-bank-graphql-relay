@@ -9,6 +9,7 @@
     "serve": "pnpm run build && pnpm run start",
     "start": "node dist/index.js",
     "schema": "tsx scripts/updateSchema.ts && cp schema/schema.graphql ../src/data"
+    "db:seed": "tsx src/seed.ts"
   },
   "author": "Lucas Alves",
   "license": "MIT",

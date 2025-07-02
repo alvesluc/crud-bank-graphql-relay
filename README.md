@@ -21,7 +21,6 @@ pnpm i
 # Install server dependencies
 cd server
 pnpm i
-pnpm config:local
 cd ..
 ```
 
@@ -30,7 +29,7 @@ cd ..
 Make the Docker infrastructure available by running:
 
 ```bash
-pnpm run services:detached
+pnpm services:detached
 ```
 
 This will start all required services (database and redis) in detached mode.
@@ -41,6 +40,8 @@ Navigate to the server directory and start the development server:
 
 ```bash
 cd server
+pnpm config:local
+pnpm db:seed
 pnpm dev
 ```
 
@@ -53,7 +54,7 @@ The server should now be running and ready to accept requests.
 To run tests in watch mode:
 
 ```bash
-pnpm run test:watch
+pnpm test:watch
 ```
 
 This will start Jest in watch mode with verbose output and run tests in band.
@@ -89,14 +90,15 @@ You can use the provided **Woovi Challenge.postman_collection.json** file to tes
 
 ### Root Directory Scripts
 
-- `pnpm run test:watch` - Run tests in watch mode (requires server to be running)
-- `pnpm run services:detached` - Start Docker services in detached mode
-- `pnpm run services:down` - Stop and remove Docker services
+- `pnpm test:watch` - Run tests in watch mode (requires server to be running)
+- `pnpm services:detached` - Start Docker services in detached mode
+- `pnpm services:down` - Stop and remove Docker services
 
 ### Server Directory Scripts
 
-- `pnpm dev` - Start the development server
+- `db:seed` - Seed the database with two users and log their credentials
 - `config:local` - Makes an copy of `.env.development` into `.env`
+- `pnpm dev` - Start the development server
 
 ## 🐳 Docker Services
 
