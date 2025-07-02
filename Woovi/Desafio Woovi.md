@@ -1,6 +1,6 @@
 #code-challenge #koa #mongo #nodejs #pt-br #relay
 
-Tempo estimado de leitura: **26 minutos**.
+Tempo estimado de leitura: **29 minutos**.
 
 > Me deu vontade de voltar a escrever. Talvez eu faça um blog.
 
