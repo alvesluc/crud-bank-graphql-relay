@@ -27,6 +27,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { BanknoteArrowUp, Send } from "lucide-react";
 import { useForm, type ControllerRenderProps } from "react-hook-form";
 import { graphql, useFragment, useMutation } from "react-relay";
+import { ROOT_ID } from "relay-runtime";
 import { toast } from "sonner";
 import { z } from "zod";
 
@@ -96,7 +97,7 @@ export default function TransactionForm({ user }: TransactionFormProps) {
     },
   });
 
-  const [commitMutation] =
+  const [commitMutation, isMutationInFlight] =
     useMutation<TransactionFormMutation>(TransactionTransfer);
 
   async function onSubmit(values: z.infer<typeof transactionFormSchema>) {
@@ -124,14 +125,28 @@ export default function TransactionForm({ user }: TransactionFormProps) {
           return;
         }
 
+        transactionForm.reset();
+
         toast.success(`Transferência enviada com sucesso!`, {
-          description: `Para: ${
+          description: `Transferência para ${
             TransactionTransfer?.transaction?.receiver?._id
-          }, valor: ${formatCurrency(
+          } no valor de ${formatCurrency(
             TransactionTransfer!.transaction!.amount!
           )}`,
           icon: <BanknoteArrowUp size={16} />,
         });
+      },
+      updater: (store, response) => {
+        if (response?.TransactionTransfer?.success) {
+          const meRecord = store.get(ROOT_ID)?.getLinkedRecord("me");
+
+          if (!meRecord) return;
+
+          const currentBalance = meRecord.getValue("balance") as number;
+          const newBalance = currentBalance - amount;
+
+          meRecord.setValue(newBalance, "balance");
+        }
       },
     });
   }
@@ -154,14 +169,14 @@ export default function TransactionForm({ user }: TransactionFormProps) {
     >
   ) => {
     let value = event.target.value;
-    value = removeNonNumericAndComma(value);
+    value = removeNonNumeric(value);
     value = handleMultipleCommas(value);
     value = limitDecimalPlaces(value);
     value = addLeadingZeroIfComma(value);
     field.onChange(value);
   };
 
-  const removeNonNumericAndComma = (value: string) => {
+  const removeNonNumeric = (value: string) => {
     return value.replace(/[^0-9,]/g, "");
   };
 
@@ -250,7 +265,11 @@ export default function TransactionForm({ user }: TransactionFormProps) {
             <Separator />
 
             <div className="flex flex-col gap-3 sm:flex-row">
-              <Button type="submit" className="flex-1">
+              <Button
+                type="submit"
+                className="flex-1"
+                disabled={isMutationInFlight}
+              >
                 <Send className="mr-2 h-4 w-4" />
                 Confirmar Transferência
               </Button>
@@ -259,6 +278,7 @@ export default function TransactionForm({ user }: TransactionFormProps) {
                 variant="outline"
                 className="flex-1 bg-transparent"
                 onClick={() => transactionForm.reset()}
+                disabled={isMutationInFlight}
               >
                 Limpar Campos
               </Button>
