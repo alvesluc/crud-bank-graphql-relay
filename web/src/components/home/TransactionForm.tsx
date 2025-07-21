@@ -208,7 +208,7 @@ export default function TransactionForm({ user }: TransactionFormProps) {
       <CardHeader>
         <CardTitle className="flex items-center space-x-2">
           <Send className="h-5 w-5" />
-          <span>Nova Transferência ${data._id}</span>
+          <span>Nova Transferência</span>
         </CardTitle>
         <CardDescription>
           Realize transferências de forma rápida e segura

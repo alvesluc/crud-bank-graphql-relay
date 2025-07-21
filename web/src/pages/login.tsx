@@ -1,5 +1,5 @@
-import type { UserRegisterWithEmailMutation } from "@/__generated__/UserRegisterWithEmailMutation.graphql";
-import { UserRegisterWithEmail } from "@/components/sign-up/UserRegisterWithEmailMutation";
+import type { UserLoginWithEmailMutation } from "@/__generated__/UserLoginWithEmailMutation.graphql";
+import { UserLoginWithEmail } from "@/components/login/UserLoginWithEmailMutation.tsx";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,13 +17,15 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { zodResolver } from "@hookform/resolvers/zod";
 import {
-  BadgeDollarSign,
-  CircleCheckIcon,
-  EyeIcon,
-  EyeOffIcon,
-} from "lucide-react";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { BadgeDollarSign, EyeIcon, EyeOffIcon } from "lucide-react";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation } from "react-relay";
@@ -31,65 +33,59 @@ import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
 import { z } from "zod";
 
-const registerFormSchema = z.object({
-  name: z
-    .string({ message: "O nome é obrigatório." })
-    .min(3, { message: "O nome deve ter no mínimo 3 caracteres." })
-    .max(50, { message: "O nome deve ter no máximo 50 caracteres." }),
-
+const loginFormSchema = z.object({
   email: z
     .string({ message: "O e-mail é obrigatório." })
     .email({ message: "Por favor, insira um e-mail válido." }),
-
   password: z
     .string({ message: "A senha é obrigatória." })
-    .min(8, { message: "A senha deve ter no mínimo 8 caracteres." }),
+    .min(1, { message: "A senha é obrigatória." }),
 });
 
-export default function SignUpPage() {
+const defaultAccounts = [
+  { email: "user1@mail.com", label: "User 1" },
+  { email: "user2@mail.com", label: "User 2" },
+];
+
+export default function LoginPage() {
   const navigate = useNavigate();
-  const registerForm = useForm<z.infer<typeof registerFormSchema>>({
-    resolver: zodResolver(registerFormSchema),
+
+  const loginForm = useForm<z.infer<typeof loginFormSchema>>({
+    resolver: zodResolver(loginFormSchema),
     defaultValues: {
-      name: "",
       email: "",
       password: "",
     },
   });
+
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
   const toggleVisibility = () => setIsPasswordVisible((prev) => !prev);
 
   const [commitMutation, isMutationInFlight] =
-    useMutation<UserRegisterWithEmailMutation>(UserRegisterWithEmail);
+    useMutation<UserLoginWithEmailMutation>(UserLoginWithEmail);
 
-  function onSubmit(values: z.infer<typeof registerFormSchema>) {
+  function onSubmit(values: z.infer<typeof loginFormSchema>) {
     commitMutation({
       variables: {
         input: {
-          name: values.name,
           email: values.email,
           password: values.password,
         },
       },
-      onCompleted: ({ UserRegisterWithEmail }) => {
-        if (UserRegisterWithEmail?.error) {
-          toast.error(UserRegisterWithEmail?.error);
+      onCompleted: ({ UserLoginWithEmail }) => {
+        if (UserLoginWithEmail?.error) {
+          toast.error(UserLoginWithEmail?.error);
           return;
         }
 
-        toast.success("Sua conta foi criada!", {
-          onAutoClose: () => {
-            navigate("/home");
-          },
-          description: "Você será redirecionado para o sistema automaticamente",
-          icon: <CircleCheckIcon size={16} />,
-          action: {
-            label: "Cancelar",
-            onClick: () => {},
-          },
-        });
+        navigate("/home");
       },
     });
+  }
+
+  function handleAccountSelect(selectedEmail: string) {
+    loginForm.setValue("email", selectedEmail);
+    loginForm.setValue("password", "password");
   }
 
   return (
@@ -103,36 +99,47 @@ export default function SignUpPage() {
         </a>
         <Card>
           <CardHeader>
-            <CardTitle className="text-xl">Crie sua conta</CardTitle>
-            <CardDescription></CardDescription>
+            <CardTitle className="text-xl">Entre na sua conta</CardTitle>
+            <CardDescription>
+              Digite suas credenciais ou selecione uma conta padrão
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <Form {...registerForm}>
+            <Form {...loginForm}>
               <form
                 className="grid gap-4"
-                onSubmit={registerForm.handleSubmit(onSubmit)}
+                onSubmit={loginForm.handleSubmit(onSubmit)}
               >
+                <div className="grid gap-2">
+                  <label className="text-sm font-medium">Contas Padrão</label>
+                  <p className="text-xs text-muted-foreground mb-2">
+                    Essas contas funcionam apenas quando o servidor foi
+                    previamente{" "}
+                    <a
+                    target="_blank"
+                      href="https://github.com/alvesluc/crud-bank-graphql-relay/blob/main/README.md#3-start-the-development-server"
+                      className="underline underline-offset-4 text-green-500"
+                    >
+                      configurado com dados de teste
+                    </a>
+                    .
+                  </p>
+                  <Select onValueChange={handleAccountSelect}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione uma conta padrão" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {defaultAccounts.map((account) => (
+                        <SelectItem key={account.email} value={account.email}>
+                          {account.label} - {account.email}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <FormField
-                  control={registerForm.control}
-                  name="name"
-                  render={({ field }) => (
-                    <FormItem className="grid gap-2">
-                      <FormLabel>Nome</FormLabel>
-                      <FormControl>
-                        <Input
-                          id="name"
-                          type="text"
-                          placeholder="Como devemos lhe chamar?"
-                          required
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={registerForm.control}
+                  control={loginForm.control}
                   name="email"
                   render={({ field }) => (
                     <FormItem className="grid gap-2">
@@ -150,8 +157,9 @@ export default function SignUpPage() {
                     </FormItem>
                   )}
                 />
+
                 <FormField
-                  control={registerForm.control}
+                  control={loginForm.control}
                   name="password"
                   render={({ field }) => (
                     <FormItem className="grid gap-2">
@@ -182,17 +190,19 @@ export default function SignUpPage() {
                     </FormItem>
                   )}
                 />
+
                 <Button
                   type="submit"
                   className="w-full"
                   disabled={isMutationInFlight}
                 >
-                  Criar conta
+                  {isMutationInFlight ? "Entrando..." : "Entrar"}
                 </Button>
+
                 <div className="text-center text-sm">
-                  Já possui uma conta?{" "}
-                  <Link to="/" className="underline underline-offset-4">
-                    Entrar
+                  Não possui uma conta?{" "}
+                  <Link to="/sign-up" className="underline underline-offset-4">
+                    Criar conta
                   </Link>
                 </div>
               </form>
